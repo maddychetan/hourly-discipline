@@ -1,4 +1,4 @@
-root {
+:root {
     --bg: #050505;
     --surface: #121212;
     --surface-2: #1e1e1e;
@@ -63,6 +63,6 @@ button { flex: 1; padding: 14px; border: none; border-radius: var(--radius); fon
 .focus { position: absolute; inset: 0; background: rgba(5,5,5,0.95); backdrop-filter: blur(5px); z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
 .focus-close { position: absolute; top: 20px; right: 20px; }
 .focus h2 { font-size: 2rem; margin: 20px 0 10px; }
-.task-time { font-size: 3rem; font-family: monospace; color: var(--secondary); }
+.focus-timer { font-size: 3rem; font-family: monospace; color: var(--secondary); }
 .task-meta { color: var(--text-dim); margin-bottom: 40px; }
 .complete-focus { background: var(--secondary); color: #000; width: 100%; max-width: 300px; padding: 16px; border-radius: 50px; font-size: 1.1rem; }
