@@ -1,86 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#050505">
+    <meta name="description" content="Strict hourly planner with local analytics.">
     <title>Hourly Discipline</title>
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" type="image/svg+xml" href="icon.svg">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="app">
-        <header class="topbar">
-            <div>
-                <p class="date" id="dateLabel">Loading...</p>
-                <h1>Discipline</h1>
-            </div>
-            <button class="icon-button small" id="addTask" aria-label="Add task">+</button>
-        </header>
+    <link rel="manifest" href="manifest.webmanifest?v=7">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css?v=7">
+  </head>
+  <body>
+    <main class="app" aria-live="polite">
+      <header class="topbar">
+        <div>
+          <p class="date" id="dateLabel"></p>
+          <h1>24 Hours</h1>
+        </div>
+        <button class="icon-button" id="addTask" type="button" aria-label="Add task">+</button>
+      </header>
 
-        <section class="status">
-            <article>
-                <span>Score</span>
-                <strong id="dailyScore">0%</strong>
-            </article>
-            <article>
-                <span>Streak</span>
-                <strong id="streakCount">0</strong>
-            </article>
-            <article>
-                <span>Sleep</span>
-                <input type="number" id="sleepHours" placeholder="Hrs" min="0" max="24" step="0.5">
-            </article>
-        </section>
+      <section class="status" aria-label="Daily status">
+        <article>
+          <span>Score</span>
+          <strong id="dailyScore">0%</strong>
+        </article>
+        <article>
+          <span>Streak</span>
+          <strong id="streakCount">0</strong>
+        </article>
+        <article>
+          <span>Sleep</span>
+          <input id="sleepHours" type="number" min="0" max="14" step="0.25" inputmode="decimal" placeholder="6+">
+        </article>
+      </section>
 
-        <div id="singleInsight" class="insight" hidden></div>
+      <p class="insight" id="singleInsight" hidden></p>
 
-        <main id="timeline" class="timeline">
-            <!-- Tasks injected by JS -->
-        </main>
+      <section class="timeline" id="timeline" aria-label="24 hour task timeline"></section>
 
-        <!-- Editor Modal -->
-        <section id="editor" class="editor" hidden>
-            <div class="editor-head">
-                <h3 id="editorTitle">Edit Hour</h3>
-                <button class="icon-button small" id="closeEditor" aria-label="Close editor">✕</button>
-            </div>
-            <input type="text" id="editTitle" placeholder="Task title">
-            <div class="field-row">
-                <input type="time" id="editTime">
-                <select id="editCategory">
-                    <option value="Routine">Routine</option>
-                    <option value="Gym">Gym</option>
-                    <option value="Work">Work</option>
-                    <option value="Study">Study</option>
-                    <option value="Food">Food</option>
-                    <option value="Sleep">Sleep</option>
-                    <option value="Active">Active</option>
-                </select>
-            </div>
-            <textarea id="editNotes" placeholder="Notes..."></textarea>
-            <div class="check-row">
-                <label><input type="checkbox" id="editKey"> Key Task</label>
-                <label><input type="radio" name="status" id="editStatusActive" value="active" checked> Active</label>
-                <label><input type="radio" name="status" id="editStatusSkipped" value="skipped"> Skipped</label>
-            </div>
-            <div class="actions">
-                <button class="secondary" id="deleteTask">Delete</button>
-                <button class="primary" id="saveEdit">Save</button>
-            </div>
-        </section>
+      <section class="editor" id="editor" hidden>
+        <div class="editor-head">
+          <strong id="editorTitle">Edit hour</strong>
+          <button class="icon-button small" id="closeEditor" type="button" aria-label="Close editor">X</button>
+        </div>
+        <input id="editTitle" type="text" maxlength="48" aria-label="Task title">
+        <textarea id="editNotes" maxlength="160" aria-label="Notes" placeholder="Notes"></textarea>
+        <div class="field-row">
+          <input id="editTime" type="time" aria-label="Planned time">
+          <select id="editCategory" aria-label="Category">
+            <option>Routine</option>
+            <option>Gym</option>
+            <option>Work</option>
+            <option>Study</option>
+            <option>Food</option>
+            <option>Sleep</option>
+          </select>
+          <select id="editStatus" aria-label="Missed action">
+            <option value="active">Active</option>
+            <option value="skipped">Skipped</option>
+          </select>
+        </div>
+        <label class="check-row">
+          <input id="editKey" type="checkbox">
+          <span>Key task</span>
+        </label>
+        <div class="actions">
+          <button class="secondary" id="deleteTask" type="button">Delete</button>
+          <button class="primary" id="saveEdit" type="button">Save</button>
+        </div>
+      </section>
+    </main>
 
-        <!-- Focus Mode Overlay -->
-        <section id="focusMode" class="focus" hidden>
-            <button class="icon-button focus-close" id="exitFocus" aria-label="Exit focus">✕</button>
-            <div>
-                <p class="task-time" id="focusTime">--:--</p>
-                <h2 id="focusTitle">Focus</h2>
-                <p class="task-meta" id="focusMeta">Details</p>
-            </div>
-            <button class="complete-focus" id="completeFocus">Complete & Exit</button>
-        </section>
-    </div>
-    <script src="app.js"></script>
-</body>
+    <section class="focus" id="focusMode" hidden>
+      <button class="icon-button focus-close" id="exitFocus" type="button" aria-label="Exit focus">X</button>
+      <p id="focusTime"></p>
+      <h2 id="focusTitle"></h2>
+      <span id="focusMeta"></span>
+      <button class="complete-focus" id="completeFocus" type="button">Complete</button>
+    </section>
+
+    <script src="app.js?v=7"></script>
+  </body>
 </html>
