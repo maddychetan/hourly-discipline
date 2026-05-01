@@ -121,9 +121,32 @@ function calculateScore() {
     return Math.round((completed / totalRelevant) * 100);
 }
 
-function render() {
+function calculateStreak() {
+    // Streak = consecutive days with >=1 completed task
+    // Since we only have today's data (single-day localStorage), 
+    // store streak separately and increment if today has completions
+    const stored = localStorage.getItem('discipline_streak');
+    const streakData = stored ? JSON.parse(stored) : { count: 0, lastDate: null };
+    const today = new Date().toDateString();
+    const completedToday = tasks.some(t => t.completedAt);
+    
+    if (completedToday && streakData.lastDate !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const wasYesterday = streakData.lastDate === yesterday.toDateString();
+        streakData.count = wasYesterday ? streakData.count + 1 : 1;
+        streakData.lastDate = today;
+        localStorage.setItem('discipline_streak', JSON.stringify(streakData));
+    }
+    return streakData.count;
+}
+
+
     // Score
     els.score.textContent = `${calculateScore()}%`;
+    
+    // Streak
+    els.streak.textContent = calculateStreak();
     
     // Sleep
     sleepData = parseFloat(els.sleep.value) || 0;
@@ -147,6 +170,7 @@ function render() {
                 <div class="task-title">${task.title} ${task.key ? '🔑' : ''}</div>
                 <div class="task-meta">${task.category} ${isDone ? '• Done' : ''} ${isSkipped ? '• Skipped' : ''}</div>
             </div>
+            <button class="icon-button small focus-btn" data-id="${task.id}" style="width:30px;height:30px;font-size:0.8rem;margin-right:5px;" aria-label="Focus">▶</button>
             <div class="task-check"></div>
         `;
         els.timeline.appendChild(card);
@@ -196,7 +220,7 @@ function saveTask() {
     const task = tasks[idx];
     task.title = els.editTitle.value;
     task.plannedTime = els.editTime.value;
-    task.hour = minutes(els.editTime.value) / 60;
+    task.hour = Math.floor(minutes(els.editTime.value) / 60);
     task.category = els.editCategory.value;
     task.notes = els.editNotes.value;
     task.key = els.editKey.checked;
@@ -275,47 +299,19 @@ function setupListeners() {
     
     els.sleep.addEventListener('change', save);
     
-    // Override card click to support focus start
-    const originalRender = render;
-    render = function() {
-        // Re-running DOM creation to attach specific listeners
-        els.timeline.innerHTML = '';
-        const sorted = [...tasks].sort((a,b) => a.hour - b.hour);
-        sorted.forEach(task => {
-            const card = document.createElement('div');
-            card.className = `task-card ${task.completedAt ? 'completed' : ''} ${task.skippedAt ? 'skipped' : ''}`;
-            
-            card.onclick = (e) => {
-                e.stopPropagation();
-                openEditor(task.id);
-            };
-            
-            // Add a small focus button?
-            const isDone = !!task.completedAt;
-            const isSkipped = !!task.skippedAt;
-            card.innerHTML = `
-                <div class="task-time">${task.plannedTime}</div>
-                <div class="task-content">
-                    <div class="task-title">${task.title} ${task.key ? '🔑' : ''}</div>
-                    <div class="task-meta">${task.category}</div>
-                </div>
-                <button class="icon-button small" style="width:30px;height:30px;font-size:0.8rem;margin-right:5px;" aria-label="Focus">▶</button>
-                <div class="task-check"></div>
-            `;
-            
-            const focusBtn = card.querySelector('button');
-            focusBtn.onclick = (e) => {
-                e.stopPropagation();
-                currentEditId = task.id; // Set context
+    // Event delegation for focus buttons on timeline
+    els.timeline.addEventListener('click', (e) => {
+        const btn = e.target.closest('.focus-btn');
+        if (btn) {
+            e.stopPropagation();
+            const id = btn.dataset.id;
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                currentEditId = id;
                 startFocus(task);
-            };
-
-            els.timeline.appendChild(card);
-        });
-        
-        // Update stats
-        els.score.textContent = `${calculateScore()}%`;
-    };
+            }
+        }
+    });
 }
 
 // Start
