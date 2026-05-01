@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hourly Discipline</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <header class="topbar">
+            <div>
+                <p class="date" id="dateLabel">Loading...</p>
+                <h1>Discipline</h1>
+            </div>
+            <button class="icon-button small" id="addTask" aria-label="Add task">+</button>
+        </header>
+
+        <section class="status">
+            <article>
+                <span>Score</span>
+                <strong id="dailyScore">0%</strong>
+            </article>
+            <article>
+                <span>Streak</span>
+                <strong id="streakCount">0</strong>
+            </article>
+            <article>
+                <span>Sleep</span>
+                <input type="number" id="sleepHours" placeholder="Hrs" min="0" max="24" step="0.5">
+            </article>
+        </section>
+
+        <div id="singleInsight" class="insight" hidden></div>
+
+        <main id="timeline" class="timeline">
+            <!-- Tasks injected by JS -->
+        </main>
+
+        <!-- Editor Modal -->
+        <section id="editor" class="editor" hidden>
+            <div class="editor-head">
+                <h3 id="editorTitle">Edit Hour</h3>
+                <button class="icon-button small" id="closeEditor" aria-label="Close editor">✕</button>
+            </div>
+            <input type="text" id="editTitle" placeholder="Task title">
+            <div class="field-row">
+                <input type="time" id="editTime">
+                <select id="editCategory">
+                    <option value="Routine">Routine</option>
+                    <option value="Gym">Gym</option>
+                    <option value="Work">Work</option>
+                    <option value="Study">Study</option>
+                    <option value="Food">Food</option>
+                    <option value="Sleep">Sleep</option>
+                    <option value="Active">Active</option>
+                </select>
+            </div>
+            <textarea id="editNotes" placeholder="Notes..."></textarea>
+            <div class="check-row">
+                <label><input type="checkbox" id="editKey"> Key Task</label>
+                <label><input type="radio" name="status" id="editStatusActive" value="active" checked> Active</label>
+                <label><input type="radio" name="status" id="editStatusSkipped" value="skipped"> Skipped</label>
+            </div>
+            <div class="actions">
+                <button class="secondary" id="deleteTask">Delete</button>
+                <button class="primary" id="saveEdit">Save</button>
+            </div>
+        </section>
+
+        <!-- Focus Mode Overlay -->
+        <section id="focusMode" class="focus" hidden>
+            <button class="icon-button focus-close" id="exitFocus" aria-label="Exit focus">✕</button>
+            <div>
+                <p class="task-time" id="focusTime">--:--</p>
+                <h2 id="focusTitle">Focus</h2>
+                <p class="task-meta" id="focusMeta">Details</p>
+            </div>
+            <button class="complete-focus" id="completeFocus">Complete & Exit</button>
+        </section>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
