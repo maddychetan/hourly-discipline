@@ -142,6 +142,7 @@ function calculateStreak() {
 }
 
 
+function render() {
     // Score
     els.score.textContent = `${calculateScore()}%`;
     
